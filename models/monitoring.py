@@ -1,5 +1,4 @@
 from datetime import datetime
-from models import db
 from datetime import datetime
 # from models import db  # ✅ benar karena db dideklarasikan di models/__init__.py
 from extensions import db
@@ -39,18 +38,6 @@ class MonitoringData(db.Model):
     def __repr__(self):
         return f'<MonitoringData {self.id}: {self.ketinggian_air}cm - {self.status}>'
 
-# class User(db.Model):
-#     __tablename__ = 'users'
-    
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(80), unique=True, nullable=False)
-#     password = db.Column(db.String(120), nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=True)
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-#     def check_password(self, password):
-#         # Simple password check (in production, use hashing)
-#         return self.password == password
 class User(db.Model):
     __tablename__ = 'users'
     

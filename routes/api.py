@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db
-from models.monitoring import MonitoringData
+# from models.monitoring import MonitoringData
 from utils.fuzzy_logic import FuzzyMamdani
 from datetime import datetime
 import json
@@ -11,7 +11,7 @@ api_bp = Blueprint('api', __name__, url_prefix='/api')
 @api_bp.route('/monitoring/store', methods=['POST'])
 def store_monitoring_data():
     """API endpoint untuk menerima data dari ESP32"""
-    
+    from models.monitoring import MonitoringData
     try:
         # Ambil data dari request
         if request.is_json:
@@ -68,7 +68,7 @@ def store_monitoring_data():
 @api_bp.route('/monitoring/data', methods=['GET'])
 def get_monitoring_data():
     """API untuk mendapatkan data monitoring (dengan pagination)"""
-    
+    from models.monitoring import MonitoringData 
     try:
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)

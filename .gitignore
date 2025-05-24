@@ -1,8 +1,5 @@
 .env
 *.pyc
 __pycache__/
-models/__pycache__
-routes/__pycache__
-templates/__pycache__
-utils/__pycache__
+
 # Ignore Jupyter Notebook checkpoints
