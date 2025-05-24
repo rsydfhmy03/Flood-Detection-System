@@ -6,7 +6,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">📊 Data Monitoring Sensor</h1>
+        <h1 class="text-3xl font-bold text-gray-900">📈 Data Monitoring Sensor</h1>
         <p class="mt-2 text-gray-600">Histori pengukuran sensor dan hasil perhitungan logika fuzzy.</p>
     </div>
 
@@ -25,12 +25,13 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tampilkan:</label>
                 <select name="limit" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">📊 Filter</option>
                     <option value="50">50 Terbaru</option>
                     <option value="all">Semua Data</option>
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow">🔍 Terapkan</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow">🔍Terapkan</button>
             </div>
             <div class="flex items-end">
                 <select onchange="handleExport(this.value)" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700">

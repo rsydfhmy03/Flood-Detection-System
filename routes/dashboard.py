@@ -98,28 +98,6 @@ def monitoring():
         return Response(generate(), mimetype="text/csv",
                         headers={"Content-Disposition": "attachment; filename=monitoring_export.csv"})
 
-
-    # elif export == "pdf":
-    #     output = io.BytesIO()
-    #     c = canvas.Canvas(output, pagesize=letter)
-    #     width, height = letter
-
-    #     c.setFont("Helvetica-Bold", 14)
-    #     c.drawString(50, height - 40, "Laporan Monitoring Sensor")
-
-    #     c.setFont("Helvetica", 10)
-    #     y = height - 70
-    #     for i, row in enumerate(data_list):
-    #         line = f"{i+1}. {row['Timestamp']} | Tinggi: {row['Ketinggian']} | Status: {row['Status']}"
-    #         c.drawString(50, y, line)
-    #         y -= 15
-    #         if y < 50:
-    #             c.showPage()
-    #             y = height - 50
-
-    #     c.save()
-    #     output.seek(0)
-    #     return send_file(output, download_name="monitoring_export.pdf", as_attachment=True)
     elif export == "pdf":
         try:
             # Gunakan PDF generator baru
