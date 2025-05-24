@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Flood Monitoring System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="mx-auto h-20 w-20 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-water text-3xl text-blue-600"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Flood Monitoring System</h2>
+            <p class="text-gray-600">IoT ESP32 Integration with Fuzzy Mamdani Logic</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2 text-gray-400"></i>Username
+                    </label>
+                    <input id="username" 
+                           name="username" 
+                           type="text" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                           placeholder="Masukkan username">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-gray-400"></i>Password
+                    </label>
+                    <input id="password" 
+                           name="password" 
+                           type="password" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                           placeholder="Masukkan password">
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Login
+                </button>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-info-circle mr-2 text-blue-500"></i>Demo Credentials:
+                </h4>
+                <div class="text-sm text-gray-600 space-y-1">
+                    <div><strong>Username:</strong> admin</div>
+                    <div><strong>Password:</strong> admin123</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Features -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-cogs mr-2 text-blue-600"></i>System Features
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-green-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">Real-time Monitoring</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-microchip text-blue-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">ESP32 Integration</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-brain text-purple-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">Fuzzy Mamdani Logic</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-database text-orange-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">MySQL Database</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div id="connectionIndicator" class="bg-white rounded-xl shadow-lg p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div id="connectionDot" class="w-3 h-3 rounded-full bg-gray-400"></div>
+                    <span id="connectionText" class="text-sm font-medium text-gray-700">Checking connection...</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                    <i class="fas fa-wifi mr-1"></i>API Status
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Check API connection on login page
+function checkAPIConnection() {
+    fetch('/api/latest-data')
+        .then(response => response.json())
+        .then(data => {
+            const dot = document.getElementById('connectionDot');
+            const text = document.getElementById('connectionText');
+            
+            dot.className = 'w-3 h-3 rounded-full bg-green-500 animate-pulse';
+            text.textContent = 'API Connected';
+            text.className = 'text-sm font-medium text-green-700';
+        })
+        .catch(error => {
+            const dot = document.getElementById('connectionDot');
+            const text = document.getElementById('connectionText');
+            
+            dot.className = 'w-3 h-3 rounded-full bg-red-500';
+            text.textContent = 'API Disconnected';
+            text.className = 'text-sm font-medium text-red-700';
+        });
+}
+
+// Check connection when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    checkAPIConnection();
+    // Recheck every 10 seconds
+    setInterval(checkAPIConnection, 10000);
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    if (!username || !password) {
+        e.preventDefault();
+        alert('Username dan password harus diisi!');
+        return false;
+    }
+    
+    // Show loading
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+    submitBtn.disabled = true;
+    
+    // Reset after 3 seconds if form doesn't submit
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 3000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Flood Monitoring System{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-tachometer-alt mr-3 text-blue-600"></i>
+                Dashboard Monitoring
+            </h1>
+            <p class="text-gray-600">Real-time flood detection system dengan IoT ESP32</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-sync-alt mr-2"></i>Refresh
+            </button>
+            <div id="lastUpdate" class="text-sm text-gray-500 bg-white px-3 py-2 rounded-lg border">
+               
+                 Last update: <span id="updateTime">--:--:--</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Current Status Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 {% if latest_data %}{% if latest_data.status == 'Aman' %}border-green-500{% elif latest_data.status == 'Siaga' %}border-yellow-500{% else %}border-red-500{% endif %}{% else %}border-gray-300{% endif %}">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Status Saat Ini</p>
+                <p id="currentStatus" class="text-2xl font-bold {% if latest_data %}{% if latest_data.status == 'Aman' %}text-green-600{% elif latest_data.status == 'Siaga' %}text-yellow-600{% else %}text-red-600{% endif %}{% else %}text-gray-400{% endif %}">
+                    {{ latest_data.status if latest_data else 'Tidak Ada Data' }}
+                </p>
+            </div>
+            <div class="w-12 h-12 {% if latest_data %}{% if latest_data.status == 'Aman' %}bg-green-100{% elif latest_data.status == 'Siaga' %}bg-yellow-100{% else %}bg-red-100{% endif %}{% else %}bg-gray-100{% endif %} rounded-full flex items-center justify-center">
+                <i class="fas {% if latest_data %}{% if latest_data.status == 'Aman' %}fa-check-circle text-green-600{% elif latest_data.status == 'Siaga' %}fa-exclamation-triangle text-yellow-600{% else %}fa-times-circle text-red-600{% endif %}{% else %}fa-question-circle text-gray-400{% endif %} text-xl"></i>
+            </div>
+        </div>
+        {% if latest_data %}
+        <div class="mt-3 text-xs text-gray-500">
+            <i class="fas fa-clock mr-1"></i>
+            {{ latest_data.timestamp.strftime('%d/%m/%Y %H:%M:%S') if latest_data.timestamp else '-' }}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Water Level Card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Ketinggian Air</p>
+                <p id="waterLevel" class="text-2xl font-bold text-blue-600">
+                    {{ "%.2f"|format(latest_data.ketinggian_air) if latest_data else '0.00' }}
+                    <span class="text-sm font-normal text-gray-500">cm</span>
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-water text-blue-600 text-xl"></i>
+            </div>
+        </div>
+        {% if latest_data %}
+        <div class="mt-3">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: {{ ((latest_data.ketinggian_air or 0) / 50 * 100)|round(1) }}%;"></div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">{{ (latest_data.ketinggian_air / 50 * 100)|round(1) }}% dari kapasitas maksimal</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Today's Data Count -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Data Hari Ini</p>
+                <p class="text-2xl font-bold text-purple-600">{{ total_today or 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-database text-purple-600 text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-3 text-xs text-gray-500">
+            <i class="fas fa-chart-bar mr-1"></i>
+            Data sensor terekam
+        </div>
+    </div>
+
+    <!-- Fuzzy Score -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">Fuzzy Score</p>
+                <p class="text-2xl font-bold text-orange-600">
+                    {{ "%.2f"|format(latest_data.defuzzifikasi_nilai) if latest_data else '0.00' }}
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-brain text-orange-600 text-xl"></i>
+            </div>
+        </div>
+        {% if latest_data %}
+        <div class="mt-3 text-xs text-gray-500">
+            <i class="fas fa-calculator mr-1"></i>
+            Hasil defuzzifikasi Mamdani
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Water Level Chart -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900">
+                <i class="fas fa-chart-line mr-2 text-blue-600"></i>
+                Grafik Ketinggian Air (24 Jam)
+            </h3>
+            <div class="flex space-x-2">
+                <button onclick="toggleChartType()" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg transition-colors">
+                    <i class="fas fa-exchange-alt mr-1"></i>Toggle View
+                </button>
+            </div>
+        </div>
+        <div id="waterLevelChart" class="h-80"></div>
+    </div>
+
+    <!-- Status Distribution -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900">
+                <i class="fas fa-pie-chart mr-2 text-green-600"></i>
+                Distribusi Status Hari Ini
+            </h3>
+        </div>
+        <div id="statusChart" class="h-80"></div>
+    </div>
+</div>
+
+<!-- Fuzzy Membership Functions -->
+<div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+            <i class="fas fa-brain mr-2 text-purple-600"></i>
+            Fuzzy Membership Functions
+        </h3>
+        {% if latest_data %}
+        <div class="bg-gray-50 px-4 py-2 rounded-lg">
+            <div class="text-sm text-gray-600">Current Input: <span class="font-semibold text-blue-600">{{ "%.2f"|format(latest_data.ketinggian_air) }} cm</span></div>
+            <div class="text-xs text-gray-500 mt-1">
+                μ-Rendah: {{ "%.3f"|format(latest_data.mu_rendah) }} | 
+                μ-Sedang: {{ "%.3f"|format(latest_data.mu_sedang) }} | 
+                μ-Tinggi: {{ "%.3f"|format(latest_data.mu_tinggi) }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div id="membershipChart" class="h-80"></div>
+</div>
+
+<!-- Recent Data Table -->
+<div class="bg-white rounded-xl shadow-lg p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">
+            <i class="fas fa-table mr-2 text-indigo-600"></i>
+            Data Terbaru
+        </h3>
+        <a href="{{ url_for('dashboard.monitoring') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+            <i class="fas fa-eye mr-2"></i>Lihat Semua
+        </a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ketinggian (cm)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fuzzy Score</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
+                </tr>
+            </thead>
+            <tbody id="recentDataTable" class="bg-white divide-y divide-gray-200">
+                {% for data in chart_data[-10:] %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ data.timestamp }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                        {{ "%.2f"|format(data.ketinggian_air) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {% if data.status == 'Aman' %}bg-green-100 text-green-800{% elif data.status == 'Siaga' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ data.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ "%.2f"|format(data.defuzzifikasi_nilai) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                        R:{{ "%.2f"|format(data.mu_rendah) }} | 
+                        S:{{ "%.2f"|format(data.mu_sedang) }} | 
+                        T:{{ "%.2f"|format(data.mu_tinggi) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+let chartData = {{ chart_data|tojson|safe }};
+let isLineChart = true;
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    startRealTimeUpdates();
+});
+
+function initializeCharts() {
+    createWaterLevelChart();
+    createStatusChart();
+    createMembershipChart();
+}
+
+function createWaterLevelChart() {
+    const timestamps = chartData.map(d => d.timestamp);
+    const waterLevels = chartData.map(d => d.ketinggian_air);
+    const statuses = chartData.map(d => d.status);
+    
+    const colors = statuses.map(status => {
+        switch(status) {
+            case 'Aman': return '#10B981';
+            case 'Siaga': return '#F59E0B';
+            case 'Banjir': return '#EF4444';
+            default: return '#6B7280';
+        }
+    });
+    
+    const trace = {
+        x: timestamps,
+        y: waterLevels,
+        type: isLineChart ? 'scatter' : 'bar',
+        mode: isLineChart ? 'lines+markers' : undefined,
+        marker: {
+            color: colors,
+            size: 8,
+            line: { width: 2, color: 'white' }
+        },
+        line: isLineChart ? {
+            color: '#3B82F6',
+            width: 3,
+            shape: 'spline'
+        } : undefined,
+        name: 'Ketinggian Air'
+    };
+    
+    const layout = {
+        title: {
+            text: 'Real-time Water Level Monitoring',
+            font: { size: 16, color: '#374151' }
+        },
+        xaxis: {
+            title: 'Waktu',
+            tickangle: -45,
+            type: 'category'
+        },
+        yaxis: {
+            title: 'Ketinggian Air (cm)',
+            range: [0, 60]
+        },
+        hovertemplate: 'Waktu: %{x}<br>Ketinggian: %{y:.2f} cm<br>Status: %{text}<extra></extra>',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Inter, sans-serif' },
+        margin: { t: 40, r: 20, b: 60, l: 60 }
+    };
+    
+    trace.text = statuses;
+    
+    Plotly.newPlot('waterLevelChart', [trace], layout, {responsive: true});
+}
+
+function createStatusChart() {
+    const statusCounts = {{ status_counts|tojson|safe }};
+    const labels = Object.keys(statusCounts);
+    const values = Object.values(statusCounts);
+    const colors = labels.map(status => {
+        switch(status) {
+            case 'Aman': return '#10B981';
+            case 'Siaga': return '#F59E0B';
+            case 'Banjir': return '#EF4444';
+            default: return '#6B7280';
+        }
+    });
+    
+    const trace = {
+        labels: labels,
+        values: values,
+        type: 'pie',
+        marker: { colors: colors },
+        textinfo: 'label+percent+value',
+        textposition: 'auto',
+        hovertemplate: '%{label}<br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+    };
+    
+    const layout = {
+        title: {
+            text: 'Status Distribution Today',
+            font: { size: 16, color: '#374151' }
+        },
+        showlegend: true,
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Inter, sans-serif' },
+        margin: { t: 40, r: 20, b: 20, l: 20 }
+    };
+    
+    Plotly.newPlot('statusChart', [trace], layout, {responsive: true});
+}
+
+function createMembershipChart() {
+    const x = Array.from({length: 101}, (_, i) => i * 0.5); // 0 to 50 cm
+    
+    const rendah = x.map(val => {
+        if (val <= 0) return 1.0;
+        else if (val <= 20) return (20 - val) / 20;
+        else return 0.0;
+    });
+    
+    const sedang = x.map(val => {
+        if (val <= 15) return 0.0;
+        else if (val <= 25) return (val - 15) / 10;
+        else if (val <= 35) return (35 - val) / 10;
+        else return 0.0;
+    });
+    
+    const tinggi = x.map(val => {
+        if (val <= 30) return 0.0;
+        else if (val <= 50) return (val - 30) / 20;
+        else return 1.0;
+    });
+    
+    const traces = [
+        {
+            x: x,
+            y: rendah,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Rendah',
+            line: { color: '#10B981', width: 3 },
+            fill: 'tonexty'
+        },
+        {
+            x: x,
+            y: sedang,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Sedang',
+            line: { color: '#F59E0B', width: 3 },
+            fill: 'tonexty'
+        },
+        {
+            x: x,
+            y: tinggi,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Tinggi',
+            line: { color: '#EF4444', width: 3 },
+            fill: 'tonexty'
+        }
+    ];
+    
+    // Add current input line if available
+    {% if latest_data %}
+    traces.push({
+        x: [{{ latest_data.ketinggian_air }}, {{ latest_data.ketinggian_air }}],
+        y: [0, 1],
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Current Input',
+        line: { color: '#8B5CF6', width: 3, dash: 'dash' }
+    });
+    {% endif %}
+    
+    const layout = {
+        title: {
+            text: 'Fuzzy Membership Functions',
+            font: { size: 16, color: '#374151' }
+        },
+        xaxis: {
+            title: 'Ketinggian Air (cm)',
+            range: [0, 50]
+        },
+        yaxis: {
+            title: 'Membership Degree (μ)',
+            range: [0, 1.1]
+        },
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Inter, sans-serif' },
+        margin: { t: 40, r: 20, b: 60, l: 60 }
+    };
+    
+    Plotly.newPlot('membershipChart', traces, layout, {responsive: true});
+}
+
+function toggleChartType() {
+    isLineChart = !isLineChart;
+    createWaterLevelChart();
+}
+
+function refreshData() {
+    showLoading();
+    
+    fetch('/api/latest-data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatusCards(data.data);
+                updateTable();
+            }
+            hideLoading();
+        })
+        .catch(error => {
+            console.error('Error refreshing data:', error);
+            hideLoading();
+        });
+    
+    // Update timestamp
+    document.getElementById('updateTime').textContent = new Date().toLocaleTimeString('id-ID');
+}
+
+function updateStatusCards(latestData) {
+    // Update current status
+    const statusElement = document.getElementById('currentStatus');
+    const waterLevelElement = document.getElementById('waterLevel');
+    
+    statusElement.textContent = latestData.status;
+    waterLevelElement.innerHTML = `${parseFloat(latestData.ketinggian_air).toFixed(2)} <span class="text-sm font-normal text-gray-500">cm</span>`;
+    
+    // Update status colors
+    const statusClasses = {
+        'Aman': 'text-green-600',
+        'Siaga': 'text-yellow-600',
+        'Banjir': 'text-red-600'
+    };
+    
+    statusElement.className = `text-2xl font-bold ${statusClasses[latestData.status] || 'text-gray-400'}`;
+}
+
+function startRealTimeUpdates() {
+    // Update every 30 seconds
+    setInterval(() => {
+        refreshData();
+    }, 30000);
+}
+function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('id-ID');
+    document.getElementById('updateTime').textContent = timeString;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+});
+
+function updateTable() {
+    fetch('/api/chart-data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update chart data
+                chartData = data.data;
+                createWaterLevelChart();
+                createStatusChart();
+            }
+        })
+        .catch(error => console.error('Error updating table:', error));
+}
+</script>
+{% endblock %}

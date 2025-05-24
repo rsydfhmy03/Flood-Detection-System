@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+
+{% block title %}Fuzzy Calculator - Flood Monitoring System{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-calculator text-purple-600 mr-3"></i>
+                    Fuzzy Mamdani Calculator
+                </h1>
+                <p class="text-gray-600">Perhitungan manual step-by-step algoritma Fuzzy Mamdani untuk deteksi banjir</p>
+            </div>
+            <div class="bg-purple-100 rounded-lg p-4">
+                <i class="fas fa-brain text-purple-600 text-3xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Input Panel -->
+        <div class="space-y-6">
+            <!-- Input Form -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-edit text-blue-600 mr-2"></i>Input Parameter
+                </h2>
+                
+                <form id="fuzzyForm" class="space-y-4">
+                    <div>
+                        <label for="ketinggian" class="block text-sm font-medium text-gray-700 mb-2">
+                            Ketinggian Air (cm)
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   id="ketinggian" 
+                                   name="ketinggian" 
+                                   min="0" 
+                                   max="100" 
+                                   step="0.1" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-12"
+                                   placeholder="Masukkan ketinggian air (0-100 cm)">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <span class="text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Range: 0-100 cm</p>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Hitung Fuzzy Mamdani
+                    </button>
+                </form>
+
+                <!-- Quick Examples -->
+                <div class="mt-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Contoh Cepat:</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setInput(10)" 
+                                class="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm transition-colors">
+                            10 cm (Aman)
+                        </button>
+                        <button onclick="setInput(28)" 
+                                class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm transition-colors">
+                            28 cm (Siaga)
+                        </button>
+                        <button onclick="setInput(45)" 
+                                class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm transition-colors">
+                            45 cm (Banjir)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Membership Functions Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-area text-green-600 mr-2"></i>Membership Functions
+                </h2>
+                <div id="membershipChart" class="w-full h-80"></div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-1 bg-green-500 mr-2"></div>
+                            <span>Rendah (0-20 cm)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-1 bg-yellow-500 mr-2"></div>
+                            <span>Sedang (15-35 cm)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-1 bg-red-500 mr-2"></div>
+                            <span>Tinggi (30-50 cm)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="space-y-6">
+            <!-- Current Status -->
+            <div id="currentStatus" class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hidden">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-info-circle text-blue-600 mr-2"></i>Hasil Perhitungan
+                </h2>
+                <div id="statusContent"></div>
+            </div>
+
+            <!-- Step by Step Results -->
+            <div id="resultsPanel" class="hidden">
+                <!-- Step 1: Fuzzifikasi -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">Step 1</span>
+                        Fuzzifikasi (Derajat Keanggotaan)
+                    </h3>
+                    <div id="step1Content"></div>
+                </div>
+
+                <!-- Step 2: Inferensi -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">Step 2</span>
+                        Inferensi (Evaluasi Aturan)
+                    </h3>
+                    <div id="step2Content"></div>
+                </div>
+
+                <!-- Step 3: Agregasi -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mr-2">Step 3</span>
+                        Agregasi (Penggabungan Output)
+                    </h3>
+                    <div id="step3Content"></div>
+                </div>
+
+                <!-- Step 4: Defuzzifikasi -->
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">Step 4</span>
+                        Defuzzifikasi (Centroid Method)
+                    </h3>
+                    <div id="step4Content"></div>
+                </div>
+
+                <!-- Final Summary -->
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border border-blue-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                        Kesimpulan Akhir
+                    </h3>
+                    <div id="finalSummary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let chartData = {{ chart_data|safe }};
+
+// Set input value from quick examples
+function setInput(value) {
+    document.getElementById('ketinggian').value = value;
+}
+
+// Initialize membership functions chart
+function initMembershipChart() {
+    const trace1 = {
+        x: chartData.x,
+        y: chartData.rendah,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Rendah',
+        line: { color: '#22c55e', width: 3 },
+        fill: 'tonexty'
+    };
+
+    const trace2 = {
+        x: chartData.x,
+        y: chartData.sedang,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Sedang',
+        line: { color: '#f59e0b', width: 3 },
+        fill: 'tonexty'
+    };
+
+    const trace3 = {
+        x: chartData.x,
+        y: chartData.tinggi,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Tinggi',
+        line: { color: '#ef4444', width: 3 },
+        fill: 'tonexty'
+    };
+
+    const layout = {
+        title: {
+            text: 'Membership Functions - Ketinggian Air',
+            font: { size: 16 }
+        },
+        xaxis: {
+            title: 'Ketinggian Air (cm)',
+            gridcolor: '#f3f4f6'
+        },
+        yaxis: {
+            title: 'Derajat Keanggotaan (μ)',
+            range: [0, 1.1],
+            gridcolor: '#f3f4f6'
+        },
+        plot_bgcolor: '#ffffff',
+        paper_bgcolor: '#ffffff',
+        margin: { l: 50, r: 20, t: 50, b: 50 },
+        legend: {
+            orientation: 'h',
+            y: -0.2
+        }
+    };
+
+    Plotly.newPlot('membershipChart', [trace1, trace2, trace3], layout, {
+        responsive: true,
+        displayModeBar: false
+    });
+}
+
+// Handle form submission
+document.getElementById('fuzzyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const ketinggian = parseFloat(document.getElementById('ketinggian').value);
+    
+    if (isNaN(ketinggian) || ketinggian < 0 || ketinggian > 100) {
+        alert('Silakan masukkan ketinggian air antara 0-100 cm');
+        return;
+    }
+
+    // Show loading
+    showLoading();
+    
+    // Calculate fuzzy
+    fetch('/fuzzy/calculate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ketinggian: ketinggian })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        
+        if (data.success) {
+            displayResults(data.result);
+            updateMembershipChart(ketinggian, data.result);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menghitung fuzzy logic');
+    });
+});
+
+// Display calculation results
+function displayResults(result) {
+    // Show panels
+    document.getElementById('currentStatus').classList.remove('hidden');
+    document.getElementById('resultsPanel').classList.remove('hidden');
+    
+    // Current Status
+    const statusColor = getStatusColor(result.step4_defuzzifikasi.final_status);
+    document.getElementById('statusContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-gray-900">${result.input} cm</div>
+                <div class="text-sm text-gray-600">Input Ketinggian</div>
+            </div>
+            <div class="text-center p-4 ${statusColor.bg} rounded-lg">
+                <div class="text-2xl font-bold ${statusColor.text}">${result.step4_defuzzifikasi.final_status}</div>
+                <div class="text-sm ${statusColor.textLight}">Status Banjir</div>
+            </div>
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                <div class="text-2xl font-bold text-blue-900">${result.step4_defuzzifikasi.centroid_value}</div>
+                <div class="text-sm text-blue-600">Nilai Defuzzifikasi</div>
+            </div>
+        </div>
+    `;
+
+    // Step 1: Fuzzifikasi
+    document.getElementById('step1Content').innerHTML = `
+        <div class="space-y-4">
+            <p class="text-gray-700">Menghitung derajat keanggotaan untuk input <strong>${result.input} cm</strong>:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-green-800 font-medium">μ Rendah</span>
+                        <span class="text-2xl font-bold text-green-900">${result.step1_fuzzifikasi.mu_rendah}</span>
+                    </div>
+                    <div class="text-xs text-green-600 mt-1">Range: 0-20 cm</div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-yellow-800 font-medium">μ Sedang</span>
+                        <span class="text-2xl font-bold text-yellow-900">${result.step1_fuzzifikasi.mu_sedang}</span>
+                    </div>
+                    <div class="text-xs text-yellow-600 mt-1">Range: 15-35 cm</div>
+                </div>
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-red-800 font-medium">μ Tinggi</span>
+                        <span class="text-2xl font-bold text-red-900">${result.step1_fuzzifikasi.mu_tinggi}</span>
+                    </div>
+                    <div class="text-xs text-red-600 mt-1">Range: 30-50 cm</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Step 2: Inferensi
+    let inferenceHTML = '<div class="space-y-3">';
+    if (result.step2_inferensi.length > 0) {
+        result.step2_inferensi.forEach((rule, index) => {
+            const ruleColor = getRuleColor(rule.output);
+            inferenceHTML += `
+                <div class="${ruleColor.bg} p-4 rounded-lg border ${ruleColor.border}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-medium ${ruleColor.text}">Rule ${index + 1}: IF ${rule.condition} THEN ${rule.conclusion}</div>
+                            <div class="text-sm ${ruleColor.textLight} mt-1">Strength: ${rule.strength}</div>
+                        </div>
+                        <div class="text-2xl font-bold ${ruleColor.text}">${rule.strength}</div>
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        inferenceHTML += '<div class="text-gray-500 italic">Tidak ada aturan yang aktif</div>';
+    }
+    inferenceHTML += '</div>';
+    document.getElementById('step2Content').innerHTML = inferenceHTML;
+
+    // Step 3: Agregasi
+    let aggregationHTML = '<div class="space-y-3">';
+    for (const [output, strength] of Object.entries(result.step3_agregasi)) {
+        const aggColor = getRuleColor(output);
+        aggregationHTML += `
+            <div class="${aggColor.bg} p-4 rounded-lg border ${aggColor.border}">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium ${aggColor.text}">Output: ${output.charAt(0).toUpperCase() + output.slice(1)}</span>
+                    <span class="text-2xl font-bold ${aggColor.text}">${strength}</span>
+                </div>
+            </div>
+        `;
+    }
+    aggregationHTML += '</div>';
+    document.getElementById('step3Content').innerHTML = aggregationHTML;
+
+    // Step 4: Defuzzifikasi
+    document.getElementById('step4Content').innerHTML = `
+        <div class="space-y-4">
+            <p class="text-gray-700">Menggunakan metode <strong>Centroid</strong> untuk mendapatkan nilai crisp:</p>
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-900 mb-2">${result.step4_defuzzifikasi.centroid_value}</div>
+                    <div class="text-blue-700">Nilai Centroid</div>
+                </div>
+            </div>
+            <div class="text-sm text-gray-600">
+                <strong>Klasifikasi:</strong>
+                <ul class="mt-2 space-y-1 list-disc list-inside">
+                    <li>0-30: Aman</li>
+                    <li>31-60: Siaga</li>
+                    <li>61-100: Banjir</li>
+                </ul>
+            </div>
+        </div>
+    `;
+
+    // Final Summary
+    document.getElementById('finalSummary').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Input & Output:</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Ketinggian Air:</span>
+                        <span class="font-medium">${result.input} cm</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status Banjir:</span>
+                        <span class="font-medium ${statusColor.text}">${result.step4_defuzzifikasi.final_status}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Nilai Defuzzifikasi:</span>
+                        <span class="font-medium">${result.step4_defuzzifikasi.centroid_value}</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Derajat Keanggotaan:</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">μ Rendah:</span>
+                        <span class="font-medium">${result.step1_fuzzifikasi.mu_rendah}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">μ Sedang:</span>
+                        <span class="font-medium">${result.step1_fuzzifikasi.mu_sedang}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">μ Tinggi:</span>
+                        <span class="font-medium">${result.step1_fuzzifikasi.mu_tinggi}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Scroll to results
+    document.getElementById('currentStatus').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Update membership chart with current input
+function updateMembershipChart(input, result) {
+    // Add vertical line for current input
+    Plotly.addTraces('membershipChart', {
+        x: [input, input],
+        y: [0, 1],
+        type: 'scatter',
+        mode: 'lines',
+        name: `Input (${input} cm)`,
+        line: { color: '#6366f1', width: 3, dash: 'dash' }
+    });
+}
+
+// Helper functions for colors
+function getStatusColor(status) {
+    switch (status.toLowerCase()) {
+        case 'aman':
+            return {
+                bg: 'bg-green-50',
+                text: 'text-green-900',
+                textLight: 'text-green-600',
+                border: 'border-green-200'
+            };
+        case 'siaga':
+            return {
+                bg: 'bg-yellow-50',
+                text: 'text-yellow-900',
+                textLight: 'text-yellow-600',
+                border: 'border-yellow-200'
+            };
+        case 'banjir':
+            return {
+                bg: 'bg-red-50',
+                text: 'text-red-900',
+                textLight: 'text-red-600',
+                border: 'border-red-200'
+            };
+        default:
+            return {
+                bg: 'bg-gray-50',
+                text: 'text-gray-900',
+                textLight: 'text-gray-600',
+                border: 'border-gray-200'
+            };
+    }
+}
+
+function getRuleColor(output) {
+    switch (output.toLowerCase()) {
+        case 'aman':
+            return {
+                bg: 'bg-green-50',
+                text: 'text-green-900',
+                textLight: 'text-green-600',
+                border: 'border-green-200'
+            };
+        case 'siaga':
+            return {
+                bg: 'bg-yellow-50',
+                text: 'text-yellow-900',
+                textLight: 'text-yellow-600',
+                border: 'border-yellow-200'
+            };
+        case 'banjir':
+            return {
+                bg: 'bg-red-50',
+                text: 'text-red-900',
+                textLight: 'text-red-600',
+                border: 'border-red-200'
+            };
+        default:
+            return {
+                bg: 'bg-gray-50',
+                text: 'text-gray-900',
+                textLight: 'text-gray-600',
+                border: 'border-gray-200'
+            };
+    }
+}
+
+// Initialize chart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initMembershipChart();
+});
+</script>
+{% endblock %}
