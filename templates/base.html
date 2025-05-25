@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Flood Monitoring System{% endblock %}</title>
-    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/image/icon.png') }}">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -60,8 +61,9 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <i class="fas fa-water text-3xl text-blue-600 mr-3"></i>
-                        <span class="font-bold text-xl text-gray-900">Flood Monitor</span>
+                        <!-- <i class="fas fa-water text-3xl text-blue-600 mr-3"></i> -->
+                        <img src="../static/assets/image/icon.png" alt="Logo" class="h-10 w-10 mr-2">
+                        <span class="font-bold text-xl text-gray-900">Flood Watch</span>
                     </div>
                     {% if session.username %}
                     <div class="hidden sm:ml-8 sm:flex sm:space-x-8">
