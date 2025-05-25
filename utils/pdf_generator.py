@@ -121,7 +121,7 @@ class FloodMonitoringPDF:
         
         canvas.setFillColor(colors.HexColor('#6b7280'))
         canvas.setFont('Helvetica', 8)
-        canvas.drawString(20, 15, "© 2024 Sistem Peringatan Dini Banjir Desa Rowokangkung - Kabupaten Lumajang")
+        canvas.drawString(20, 15, "© 2025 Sistem Peringatan Dini Banjir Desa Rowokangkung - Kabupaten Lumajang by Mitahudev29")
         canvas.drawRightString(self.width - 20, 15, f"Halaman {doc.page}")
         
         canvas.restoreState()
