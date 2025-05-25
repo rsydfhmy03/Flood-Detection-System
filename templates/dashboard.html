@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- Header Section -->
-<div class="mb-8">
+<!-- <div class="mb-8">
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">
@@ -23,7 +23,28 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+
+ <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-tachometer-alt mr-3 text-blue-600"></i>
+                Dashboard Monitoring
+            </h1>
+            <p class="text-gray-600">Real-time flood detection system dengan IoT ESP32</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-sync-alt mr-2"></i>Refresh
+            </button>
+            <div id="lastUpdate" class="text-sm text-gray-500 bg-white px-3 py-2 rounded-lg border">
+               
+                 Last update: <span id="updateTime">--:--:--</span>
+            </div>
+        </div>
+        </div>
+    </div>
 
 <!-- Status Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
