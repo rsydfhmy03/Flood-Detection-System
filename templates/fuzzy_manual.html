@@ -3,35 +3,49 @@
 {% block title %}Fuzzy Calculator - Flood Monitoring System{% endblock %}
 
 {% block content %}
-<div class="space-y-8">
-    <!-- Header -->
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                    <i class="fas fa-calculator text-blue-600 mr-3"></i>
-                    Fuzzy Mamdani Calculator
-                </h1>
-                <p class="text-gray-600">Perhitungan manual step-by-step algoritma Fuzzy Mamdani untuk deteksi banjir</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Enhanced Header with Neumorphism -->
+    <div class="bg-gradient-to-br from-slate-100 to-purple-50 rounded-2xl shadow-neumorphism p-8 mb-8 border border-white/20 backdrop-blur-sm">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
+            <div class="flex items-center space-x-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl shadow-neumorphism flex items-center justify-center transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-calculator text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-purple-800 bg-clip-text text-transparent mb-2">
+                        Fuzzy Mamdani Calculator
+                    </h1>
+                    <p class="text-gray-600 text-lg">Perhitungan manual step-by-step algoritma Fuzzy Mamdani untuk deteksi banjir</p>
+                </div>
             </div>
-            <div class="bg-purple-100 rounded-lg p-4">
-                <i class="fas fa-brain text-blue-600 text-3xl"></i>
+            <div class="flex space-x-4">
+                <div class="bg-white rounded-2xl shadow-neumorphism p-4 text-center min-w-[100px]">
+                    <div class="w-3 h-3 bg-purple-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                    <span class="text-xs text-gray-600 font-medium">Manual Calculator</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-neumorphism p-4 text-center min-w-[100px]">
+                    <i class="fas fa-brain text-purple-500 text-lg mb-1"></i>
+                    <div class="text-xs text-gray-600 font-medium">Fuzzy Logic</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Input Panel -->
+        <!-- Enhanced Input Panel -->
         <div class="space-y-6">
-            <!-- Input Form -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-edit text-blue-600 mr-2"></i>Input Parameter
-                </h2>
+            <!-- Enhanced Input Form -->
+            <div class="bg-gradient-to-br from-white to-purple-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                <div class="flex items-center mb-6">
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-xl shadow-neumorphism-inset flex items-center justify-center mr-3">
+                        <i class="fas fa-edit text-white text-sm"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Input Parameter</h2>
+                </div>
                 
-                <form id="fuzzyForm" class="space-y-4">
-                    <div>
-                        <label for="ketinggian" class="block text-sm font-medium text-gray-700 mb-2">
+                <form id="fuzzyForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label for="ketinggian" class="block text-sm font-semibold text-gray-700">
                             Ketinggian Air (cm)
                         </label>
                         <div class="relative">
@@ -41,121 +55,149 @@
                                    min="0" 
                                    max="100" 
                                    step="0.1" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-12"
+                                   class="w-full bg-white rounded-xl border-0 shadow-neumorphism-inset py-4 px-4 pr-12 text-gray-700 focus:ring-2 focus:ring-purple-400 focus:shadow-neumorphism-hover transition-all duration-200"
                                    placeholder="Masukkan ketinggian air (0-100 cm)">
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <span class="text-gray-500 text-sm">cm</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="text-gray-500 text-sm font-medium">cm</span>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Range: 0-100 cm</p>
+                        <p class="text-xs text-gray-500">Range: 0-100 cm</p>
                     </div>
 
                     <button type="submit" 
-                            class="w-full bg-gradient-to-r from-blue-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+                            class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200">
                         <i class="fas fa-calculator mr-2"></i>
                         Hitung Fuzzy Mamdani
                     </button>
                 </form>
 
-                <!-- Quick Examples -->
-                <div class="mt-6">
-                    <h3 class="text-sm font-medium text-gray-700 mb-3">Contoh Cepat:</h3>
-                    <div class="grid grid-cols-3 gap-2">
+                <!-- Enhanced Quick Examples -->
+                <div class="mt-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-6 h-6 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-lg shadow-neumorphism-inset flex items-center justify-center mr-2">
+                            <i class="fas fa-lightbulb text-white text-xs"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-700">Contoh Cepat:</h3>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
                         <button onclick="setInput(16)" 
-                                class="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                            16 cm (Aman)
+                                class="bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-medium shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200 border border-green-200/20">
+                            <div class="text-lg font-bold">16 cm</div>
+                            <div class="text-xs">Aman</div>
                         </button>
                         <button onclick="setInput(18)" 
-                                class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                            18 cm (Siaga)
+                                class="bg-gradient-to-br from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 text-yellow-700 px-4 py-3 rounded-xl text-sm font-medium shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200 border border-yellow-200/20">
+                            <div class="text-lg font-bold">18 cm</div>
+                            <div class="text-xs">Siaga</div>
                         </button>
                         <button onclick="setInput(33)" 
-                                class="bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                            33 cm (Banjir)
+                                class="bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200 border border-red-200/20">
+                            <div class="text-lg font-bold">33 cm</div>
+                            <div class="text-xs">Banjir</div>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Membership Functions Chart -->
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-chart-area text-green-600 mr-2"></i>Membership Functions
-                </h2>
-                <div id="membershipChart" class="w-full h-100"></div>
-                <div class="mt-5 text-sm text-gray-600">
-                    <div class="grid grid-cols-3 gap-4">
+            <!-- Enhanced Membership Functions Chart -->
+            <div class="bg-gradient-to-br from-white to-green-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                <div class="flex items-center mb-6">
+                    <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl shadow-neumorphism-inset flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-area text-white text-sm"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Membership Functions</h2>
+                </div>
+                <div class="bg-white rounded-xl shadow-neumorphism-inset p-4 mb-6">
+                    <div id="membershipChart" class="w-full h-100"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-neumorphism p-4 border border-green-200/20">
                         <div class="flex items-center">
-                            <div class="w-4 h-1 bg-green-500 mr-2"></div>
-                            <span>Rendah (0-20 cm)</span>
+                            <div class="w-4 h-2 bg-green-500 rounded-full mr-3"></div>
+                            <div>
+                                <div class="text-sm font-semibold text-green-800">Rendah</div>
+                                <div class="text-xs text-green-600">0-20 cm</div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-neumorphism p-4 border border-yellow-200/20">
                         <div class="flex items-center">
-                            <div class="w-4 h-1 bg-yellow-500 mr-2"></div>
-                            <span>Sedang (15-35 cm)</span>
+                            <div class="w-4 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                            <div>
+                                <div class="text-sm font-semibold text-yellow-800">Sedang</div>
+                                <div class="text-xs text-yellow-600">15-35 cm</div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-neumorphism p-4 border border-red-200/20">
                         <div class="flex items-center">
-                            <div class="w-4 h-1 bg-red-500 mr-2"></div>
-                            <span>Tinggi (30-50 cm)</span>
+                            <div class="w-4 h-2 bg-red-500 rounded-full mr-3"></div>
+                            <div>
+                                <div class="text-sm font-semibold text-red-800">Tinggi</div>
+                                <div class="text-xs text-red-600">30-50 cm</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Results Panel -->
+        <!-- Enhanced Results Panel -->
         <div class="space-y-6">
-            <!-- Current Status -->
-            <div id="currentStatus" class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hidden">
+            <!-- Enhanced Current Status -->
+            <div id="currentStatus" class="bg-gradient-to-br from-white to-blue-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40 hidden">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     <i class="fas fa-info-circle text-blue-600 mr-2"></i>Hasil Perhitungan
                 </h2>
                 <div id="statusContent"></div>
             </div>
 
-            <!-- Step by Step Results -->
-            <div id="resultsPanel" class="hidden">
+            <!-- Enhanced Step by Step Results -->
+            <div id="resultsPanel" class="hidden space-y-6">
                 <!-- Step 1: Fuzzifikasi -->
-                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">Step 1</span>
+                <div class="bg-gradient-to-br from-white to-blue-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-neumorphism mr-3">Step 1</span>
                         Fuzzifikasi (Derajat Keanggotaan)
                     </h3>
                     <div id="step1Content"></div>
                 </div>
 
                 <!-- Step 2: Inferensi -->
-                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">Step 2</span>
+                <div class="bg-gradient-to-br from-white to-green-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-neumorphism mr-3">Step 2</span>
                         Inferensi (Evaluasi Aturan)
                     </h3>
                     <div id="step2Content"></div>
                 </div>
 
                 <!-- Step 3: Agregasi -->
-                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mr-2">Step 3</span>
+                <div class="bg-gradient-to-br from-white to-yellow-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-neumorphism mr-3">Step 3</span>
                         Agregasi (Penggabungan Output)
                     </h3>
                     <div id="step3Content"></div>
                 </div>
 
                 <!-- Step 4: Defuzzifikasi -->
-                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">Step 4</span>
+                <div class="bg-gradient-to-br from-white to-purple-50/30 shadow-neumorphism rounded-2xl p-8 border border-white/40">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-neumorphism mr-3">Step 4</span>
                         Defuzzifikasi (Centroid Method)
                     </h3>
                     <div id="step4Content"></div>
                 </div>
 
-                <!-- Final Summary -->
-                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border border-blue-100">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <i class="fas fa-trophy text-yellow-500 mr-2"></i>
-                        Kesimpulan Akhir
-                    </h3>
+                <!-- Enhanced Final Summary -->
+                <div class="bg-gradient-to-br from-slate-50 to-indigo-50 shadow-neumorphism rounded-2xl p-8 border border-indigo-100/50">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-neumorphism flex items-center justify-center mr-3">
+                            <i class="fas fa-trophy text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Kesimpulan Akhir</h3>
+                    </div>
                     <div id="finalSummary"></div>
                 </div>
             </div>

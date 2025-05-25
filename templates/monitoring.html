@@ -4,134 +4,364 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <!-- <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">📈 Data Monitoring Sensor</h1>
-        <p class="mt-2 text-gray-600">Histori pengukuran sensor dan hasil perhitungan logika fuzzy.</p>
-    </div> -->
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                    📈 Data Monitoring Sensor
-                </h1>
-                <p class="text-gray-600">Histori pengukuran sensor dan hasil perhitungan logika fuzzy.</p>
+    <!-- Enhanced Header with Neumorphism -->
+    <div class="bg-gradient-to-br from-slate-100 to-blue-50 rounded-2xl shadow-neumorphism p-8 mb-8 border border-white/20 backdrop-blur-sm">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
+            <div class="flex items-center space-x-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl shadow-neumorphism flex items-center justify-center transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-blue-800 bg-clip-text text-transparent mb-2">
+                        Data Monitoring Sensor
+                    </h1>
+                    <p class="text-gray-600 text-lg">Histori pengukuran sensor dan hasil perhitungan logika fuzzy real-time</p>
+                </div>
             </div>
-            <div class="bg-purple-100 rounded-lg p-4">
-                <!-- <i class="fas fa-brain text-purple-600 text-3xl"></i> -->
-                 <!-- <i class="fa-solid fa-wave"></i> -->
-                  <i class="fas fa-cloud-moon-rain text-blue-600 text-3xl"></i>
-                  
+            <div class="flex space-x-4">
+                <div class="bg-white rounded-2xl shadow-neumorphism p-4 text-center min-w-[100px]">
+                    <div class="w-3 h-3 bg-green-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                    <span class="text-xs text-gray-600 font-medium">Live Monitoring</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-neumorphism p-4 text-center min-w-[100px]">
+                    <i class="fas fa-database text-blue-500 text-lg mb-1"></i>
+                    <div class="text-xs text-gray-600 font-medium">Database Active</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Card -->
-    <div class="bg-gradient-to-tr from-white to-blue-50 shadow-lg rounded-2xl p-6 mb-6 border border-blue-100">
-        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-                <select name="status" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Semua</option>
-                    <option value="Aman" {% if selected_status == 'Aman' %}selected{% endif %}>Aman</option>
-                    <option value="Siaga" {% if selected_status == 'Siaga' %}selected{% endif %}>Siaga</option>
-                    <option value="Banjir" {% if selected_status == 'Banjir' %}selected{% endif %}>Banjir</option>
-                </select>
+    <!-- Enhanced Filter Card with Neumorphism -->
+    <div class="bg-gradient-to-br from-white to-blue-50/30 shadow-neumorphism rounded-2xl p-8 mb-8 border border-white/40">
+        <div class="flex items-center mb-6">
+            <div class="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-xl shadow-neumorphism-inset flex items-center justify-center mr-3">
+                <i class="fas fa-filter text-white text-sm"></i>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tampilkan:</label>
-                <select name="limit" class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">📊 Filter</option>
-                    <option value="50">50 Terbaru</option>
-                    <option value="all">Semua Data</option>
-                </select>
+            <h3 class="text-xl font-bold text-gray-800">Filter & Export Data</h3>
+        </div>
+        
+        <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">Status Monitoring:</label>
+                <div class="relative">
+                    <select name="status" class="w-full bg-white rounded-xl border-0 shadow-neumorphism-inset py-3 px-4 text-gray-700 focus:ring-2 focus:ring-blue-400 focus:shadow-neumorphism-hover transition-all duration-200 appearance-none">
+                        <option value="">🌊 Semua Status</option>
+                        <option value="Aman" {% if selected_status == 'Aman' %}selected{% endif %}>✅ Aman</option>
+                        <option value="Siaga" {% if selected_status == 'Siaga' %}selected{% endif %}>⚠️ Siaga</option>
+                        <option value="Banjir" {% if selected_status == 'Banjir' %}selected{% endif %}>🚨 Banjir</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-end">
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow">🔍Terapkan</button>
+            
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">Jumlah Data:</label>
+                <div class="relative">
+                    <select name="limit" class="w-full bg-white rounded-xl border-0 shadow-neumorphism-inset py-3 px-4 text-gray-700 focus:ring-2 focus:ring-blue-400 focus:shadow-neumorphism-hover transition-all duration-200 appearance-none">
+                        <option value="">📊 Pilih Jumlah</option>
+                        <option value="50" {% if limit == '50' %}selected{% endif %}>50 Data Terbaru</option>
+                        <option value="100" {% if limit == '100' %}selected{% endif %}>100 Data Terbaru</option>
+                        <option value="all" {% if limit == 'all' %}selected{% endif %}>Semua Data</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-end">
-                <select onchange="handleExport(this.value)" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-700">
-                    <option value="">📥 Export</option>
-                    <option value="csv">Export CSV</option>
-                    <option value="pdf">Export PDF</option>
+            
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">&nbsp;</label>
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-search mr-2"></i>Terapkan Filter
+                </button>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">&nbsp;</label>
+                <select onchange="handleExport(this.value)" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-yellow-900 py-3 px-6 rounded-xl shadow-neumorphism hover:shadow-neumorphism-hover transition-all duration-200 cursor-pointer appearance-none">
+                    <option value="">📥 Export Data</option>
+                    <option value="csv">📄 Export CSV</option>
+                    <option value="pdf">📋 Export PDF</option>
+                    <option value="excel">📊 Export Excel</option>
                 </select>
             </div>
         </form>
     </div>
 
-    <!-- Data Table Card -->
-    <div class="bg-white rounded-2xl shadow overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <i class="fas fa-database text-indigo-500"></i>
-                Data Sensor Air
-            </h3>
+    <!-- Enhanced Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-neumorphism p-6 border border-green-200/20">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-600 text-sm font-semibold uppercase tracking-wide">Status Aman</p>
+                    <p class="text-3xl font-bold text-green-700 mt-1">
+                        {{ monitoring_data | selectattr('status', 'equalto', 'Aman') | list | length }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-green-500 rounded-2xl shadow-neumorphism flex items-center justify-center">
+                    <i class="fas fa-check-circle text-white text-xl"></i>
+                </div>
+            </div>
         </div>
+        
+        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl shadow-neumorphism p-6 border border-yellow-200/20">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-600 text-sm font-semibold uppercase tracking-wide">Status Siaga</p>
+                    <p class="text-3xl font-bold text-yellow-700 mt-1">
+                        {{ monitoring_data | selectattr('status', 'equalto', 'Siaga') | list | length }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-500 rounded-2xl shadow-neumorphism flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl shadow-neumorphism p-6 border border-red-200/20">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-red-600 text-sm font-semibold uppercase tracking-wide">Status Banjir</p>
+                    <p class="text-3xl font-bold text-red-700 mt-1">
+                        {{ monitoring_data | selectattr('status', 'equalto', 'Banjir') | list | length }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-red-500 rounded-2xl shadow-neumorphism flex items-center justify-center">
+                    <i class="fas fa-water text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Data Table Card with Neumorphism -->
+    <div class="bg-white rounded-2xl shadow-neumorphism overflow-hidden border border-gray-100/50">
+        <!-- Table Header -->
+        <div class="bg-gradient-to-r from-slate-50 to-blue-50 px-8 py-6 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-neumorphism flex items-center justify-center">
+                        <i class="fas fa-database text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Data Sensor Air</h3>
+                        <p class="text-sm text-gray-600">Real-time monitoring data dengan fuzzy logic processing</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <i class="fas fa-clock text-blue-500"></i>
+                    <span>Last updated: <span id="lastUpdate">--:--:--</span></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced Responsive Table -->
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+            <table class="min-w-full divide-y divide-gray-100">
+                <thead class="bg-gradient-to-r from-gray-50 to-blue-50">
                     <tr>
-                        <th class="px-6 py-3 text-left">ID</th>
-                        <th class="px-6 py-3 text-left">Timestamp</th>
-                        <th class="px-6 py-3 text-left">Ketinggian</th>
-                        <th class="px-6 py-3 text-left">Jarak</th>
-                        <th class="px-6 py-3 text-left">Status</th>
-                        <th class="px-6 py-3 text-left">μ Rendah</th>
-                        <th class="px-6 py-3 text-left">μ Sedang</th>
-                        <th class="px-6 py-3 text-left">μ Tinggi</th>
-                        <th class="px-6 py-3 text-left">Defuzzifikasi</th>
-                        <th class="px-6 py-3 text-left">Aksi</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-hashtag text-gray-400"></i>
+                                <span>ID</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-clock text-gray-400"></i>
+                                <span>Timestamp</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-arrows-alt-v text-blue-500"></i>
+                                <span>Ketinggian Air</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-ruler text-purple-500"></i>
+                                <span>Jarak Sensor</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-traffic-light text-green-500"></i>
+                                <span>Status</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-chart-bar text-green-600"></i>
+                                <span>μ Rendah</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-chart-bar text-yellow-600"></i>
+                                <span>μ Sedang</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-chart-bar text-red-600"></i>
+                                <span>μ Tinggi</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-r border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-calculator text-purple-600"></i>
+                                <span>Defuzzifikasi</span>
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-cogs text-gray-500"></i>
+                                <span>Aksi</span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-100">
+                <tbody class="bg-white divide-y divide-gray-50">
                     {% for data in monitoring_data %}
-                    <tr class="hover:bg-blue-50 transition">
-                        <td class="px-6 py-4">{{ data.id }}</td>
-                        <td class="px-6 py-4">{{ data.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                        <td class="px-6 py-4 font-semibold text-blue-600">{{ "%.1f"|format(data.ketinggian_air) }} cm</td>
-                        <td class="px-6 py-4 text-gray-500">{{ "%.1f"|format(data.jarak_sensor) }} cm</td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold
-                                {% if data.status == 'Aman' %}bg-green-100 text-green-700
-                                {% elif data.status == 'Siaga' %}bg-yellow-100 text-yellow-800
-                                {% else %}bg-red-100 text-red-700{% endif %}">
+                    <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 group">
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="bg-gray-100 rounded-lg px-3 py-1 text-sm font-mono text-gray-700 inline-block">
+                                #{{ data.id }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="text-sm text-gray-900 font-medium">{{ data.timestamp.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-xs text-gray-500">{{ data.timestamp.strftime('%H:%M:%S') }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="text-lg font-bold text-blue-700">{{ "%.1f"|format(data.ketinggian_air) }}</span>
+                                <span class="text-sm text-gray-500">cm</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                <span class="font-semibold text-gray-700">{{ "%.1f"|format(data.jarak_sensor) }}</span>
+                                <span class="text-sm text-gray-500">cm</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow-neumorphism-inset
+                                {% if data.status == 'Aman' %}bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300
+                                {% elif data.status == 'Siaga' %}bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border border-yellow-300
+                                {% else %}bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300{% endif %}">
+                                {% if data.status == 'Aman' %}
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                {% elif data.status == 'Siaga' %}
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                {% else %}
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                {% endif %}
                                 {{ data.status }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">{{ "%.3f"|format(data.mu_rendah) }}</td>
-                        <td class="px-6 py-4">{{ "%.3f"|format(data.mu_sedang) }}</td>
-                        <td class="px-6 py-4">{{ "%.3f"|format(data.mu_tinggi) }}</td>
-                        <td class="px-6 py-4 font-semibold">{{ "%.2f"|format(data.defuzzifikasi_nilai) }}</td>
-                        <td class="px-6 py-4">
-                            <a target="_blank" href="https://wa.me/6282142839630?text=Halo%20Admin%2C%20terdeteksi%20status%20*{{ data.status }}*%20pada%20{{ data.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}%20yang%20perlu%20ditindaklanjuti." class="text-blue-500 hover:text-blue-700 underline">WA</a>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="bg-green-50 rounded-lg px-3 py-2 border border-green-200">
+                                <span class="font-mono text-sm font-semibold text-green-700">{{ "%.3f"|format(data.mu_rendah) }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="bg-yellow-50 rounded-lg px-3 py-2 border border-yellow-200">
+                                <span class="font-mono text-sm font-semibold text-yellow-700">{{ "%.3f"|format(data.mu_sedang) }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="bg-red-50 rounded-lg px-3 py-2 border border-red-200">
+                                <span class="font-mono text-sm font-semibold text-red-700">{{ "%.3f"|format(data.mu_tinggi) }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-50">
+                            <div class="bg-purple-50 rounded-lg px-3 py-2 border border-purple-200">
+                                <span class="font-mono text-lg font-bold text-purple-700">{{ "%.2f"|format(data.defuzzifikasi_nilai) }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex space-x-2">
+                                <a target="_blank" 
+                                   href="https://wa.me/6282142839630?text=Halo%20Admin%2C%20terdeteksi%20status%20*{{ data.status }}*%20pada%20{{ data.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}%20yang%20perlu%20ditindaklanjuti." 
+                                   class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-neumorphism hover:shadow-neumorphism-hover transform hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-whatsapp mr-1"></i>WhatsApp
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="10" class="px-6 py-4 text-center text-gray-400 italic">Data tidak ditemukan.</td>
+                        <td colspan="10" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center space-y-4">
+                                <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-database text-gray-400 text-2xl"></i>
+                                </div>
+                                <div class="text-gray-500">
+                                    <p class="text-lg font-semibold">Tidak ada data ditemukan</p>
+                                    <p class="text-sm">Coba ubah filter atau tunggu data baru masuk</p>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
 
-            {% if total_pages > 1 %}
-            <div class="flex justify-between items-center p-4 text-sm text-gray-500 border-t border-gray-100">
-                <div>Halaman <strong>{{ current_page }}</strong> dari <strong>{{ total_pages }}</strong></div>
-                <div class="space-x-2">
+        <!-- Enhanced Pagination -->
+        {% if total_pages > 1 %}
+        <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-t border-gray-100">
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                    <i class="fas fa-info-circle text-blue-500"></i>
+                    <span>Halaman <span class="font-bold text-blue-600">{{ current_page }}</span> dari <span class="font-bold text-blue-600">{{ total_pages }}</span></span>
+                </div>
+                <div class="flex space-x-2">
                     {% if current_page > 1 %}
-                    <a href="{{ url_for('dashboard.monitoring', status=selected_status, limit=limit, page=current_page-1) }}" class="px-3 py-1 rounded-md bg-white border shadow-sm hover:bg-gray-100">← Sebelumnya</a>
+                    <a href="{{ url_for('dashboard.monitoring', status=selected_status, limit=limit, page=current_page-1) }}" 
+                       class="bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-xl shadow-neumorphism hover:shadow-neumorphism-hover transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Sebelumnya</span>
+                    </a>
                     {% endif %}
                     {% if current_page < total_pages %}
-                    <a href="{{ url_for('dashboard.monitoring', status=selected_status, limit=limit, page=current_page+1) }}" class="px-3 py-1 rounded-md bg-white border shadow-sm hover:bg-gray-100">Berikutnya →</a>
+                    <a href="{{ url_for('dashboard.monitoring', status=selected_status, limit=limit, page=current_page+1) }}" 
+                       class="bg-white hover:bg-blue-50 text-blue-600 font-semibold px-4 py-2 rounded-xl shadow-neumorphism hover:shadow-neumorphism-hover transition-all duration-200 flex items-center space-x-2">
+                        <span>Berikutnya</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 
-    <div class="text-right text-sm text-gray-500 mt-4">
-        Menampilkan <strong>{{ monitoring_data|length }}</strong> entri {% if selected_status %}dengan status <strong>{{ selected_status }}</strong>{% endif %}
+    <!-- Enhanced Summary Footer -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-neumorphism p-6 mt-8 border border-blue-100">
+        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-neumorphism flex items-center justify-center">
+                    <i class="fas fa-chart-pie text-white"></i>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-gray-800">
+                        Menampilkan <span class="text-blue-600">{{ monitoring_data|length }}</span> entri data
+                        {% if selected_status %}dengan status <span class="text-blue-600 font-bold">{{ selected_status }}</span>{% endif %}
+                    </p>
+                    <p class="text-sm text-gray-600">Data diperbarui setiap 45 detik secara otomatis</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 text-sm">
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-gray-600">Auto-refresh aktif</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -141,8 +371,239 @@
         if (format) {
             params.set('export', format);
             window.location.href = `${window.location.pathname}?${params.toString()}`;
+            
+            // Reset dropdown
+            setTimeout(() => {
+                event.target.selectedIndex = 0;
+            }, 100);
         }
     }
-    setInterval(() => { location.reload(); }, 15000);
+
+    // Auto-refresh functionality
+    let refreshInterval;
+    
+    function startAutoRefresh() {
+        refreshInterval = setInterval(() => {
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
+            
+            // Reload page
+            location.reload();
+        }, 45000);
+    }
+
+    // Start auto-refresh when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        startAutoRefresh();
+        
+        // Update initial timestamp
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
+    });
+
+    // Pause auto-refresh when user is inactive
+    let isUserActive = true;
+    let userActivityTimeout;
+
+    function resetUserActivity() {
+        isUserActive = true;
+        clearTimeout(userActivityTimeout);
+        
+        if (!refreshInterval) {
+            startAutoRefresh();
+        }
+        
+        userActivityTimeout = setTimeout(() => {
+            isUserActive = false;
+        }, 300000); // 5 minutes
+    }
+
+    // Listen for user activity
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+        document.addEventListener(event, resetUserActivity, true);
+    });
+
+    // Initial call
+    resetUserActivity();
+
+    // Enhanced table row animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            row.style.animationDelay = `${index * 50}ms`;
+            row.classList.add('animate-fade-in');
+        });
+    });
+
+    // Add fade-in animation class
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    `;
+    document.head.appendChild(style);
 </script>
+
+<style>
+    /* Enhanced neumorphism effects */
+    .shadow-neumorphism {
+        box-shadow: 8px 8px 16px rgba(209, 233, 255, 0.8), -8px -8px 16px rgba(255, 255, 255, 0.9);
+    }
+    
+    .shadow-neumorphism-inset {
+        box-shadow: inset 4px 4px 8px rgba(209, 233, 255, 0.6), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+    }
+    
+    .shadow-neumorphism-hover {
+        box-shadow: 12px 12px 24px rgba(209, 233, 255, 0.9), -12px -12px 24px rgba(255, 255, 255, 1);
+    }
+    
+    /* Custom scrollbar */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: linear-gradient(to right, #3b82f6, #6366f1);
+        border-radius: 4px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to right, #2563eb, #4f46e5);
+    }
+    
+    /* Enhanced hover effects */
+    .group:hover .transform {
+        transform: translateX(2px);
+    }
+    
+    /* Status badge animations */
+    .status-badge {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .status-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .status-badge:hover::before {
+        left: 100%;
+    }
+    
+    /* Enhanced button effects */
+    .btn-neumorphism {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
+    }
+    
+    .btn-neumorphism:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+    
+    .btn-neumorphism:active {
+        transform: translateY(0) scale(0.98);
+        box-shadow: inset 4px 4px 8px rgba(209, 233, 255, 0.6), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Loading animation for auto-refresh */
+    @keyframes pulse-glow {
+        0%, 100% { 
+            box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.8);
+            transform: scale(1.05);
+        }
+    }
+    
+    .animate-pulse-glow {
+        animation: pulse-glow 2s infinite;
+    }
+    
+    /* Enhanced table styling */
+    tbody tr {
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    tbody tr:nth-child(even) {
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.4));
+    }
+    
+    tbody tr:hover {
+        background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(219, 234, 254, 0.6));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    * {
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    
+    /* Enhanced gradient text */
+    .gradient-text {
+        background: linear-gradient(135deg, #1f2937, #3b82f6, #6366f1);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient-shift 3s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    /* Mobile responsiveness enhancements */
+    @media (max-width: 768px) {
+        .shadow-neumorphism {
+            box-shadow: 4px 4px 8px rgba(209, 233, 255, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.8);
+        }
+        
+        .shadow-neumorphism-hover {
+            box-shadow: 6px 6px 12px rgba(209, 233, 255, 0.7), -6px -6px 12px rgba(255, 255, 255, 0.9);
+        }
+    }
+    
+    /* Custom tooltip styling */
+    [title] {
+        position: relative;
+    }
+    
+    [title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+        pointer-events: none;
+    }
+</style>
 {% endblock %}
