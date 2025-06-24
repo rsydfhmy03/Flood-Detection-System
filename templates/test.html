@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzzy Calculator - Flood Monitoring System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        /* Custom animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.33);
+                opacity: 1;
+            }
+            80%, 100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-tint text-blue-600 text-2xl mr-3"></i>
+                    <span class="text-xl font-bold text-gray-900">Flood Monitor</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-home mr-1"></i>Dashboard
+                    </a>
+                    <a href="/history" class="text-gray-600 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-history mr-1"></i>History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="space-y-8">
+            <!-- Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <i class="fas fa-calculator text-blue-600 mr-3"></i>
+                            Fuzzy Mamdani Calculator
+                        </h1>
+                        <p class="text-gray-600">Perhitungan manual step-by-step algoritma Fuzzy Mamdani untuk deteksi banjir dengan 2 parameter</p>
+                        <div class="flex items-center mt-2 text-sm text-blue-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            <span>Input: Ketinggian Air & Curah Hujan | Output: Status Banjir</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-4">
+                        <i class="fas fa-brain text-blue-600 text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <!-- Input Panel -->
+                <div class="xl:col-span-1 space-y-6">
+                    <!-- Input Form -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-edit text-blue-600 mr-2"></i>Input Parameter
+                        </h2>
+                        
+                        <form id="fuzzyForm" class="space-y-4">
+                            <!-- Ketinggian Air -->
+                            <div>
+                                <label for="ketinggian" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-water text-blue-500 mr-1"></i>
+                                    Ketinggian Air (cm)
+                                </label>
+                                <div class="relative">
+                                    <input type="number" 
+                                           id="ketinggian" 
+                                           name="ketinggian" 
+                                           min="0" 
+                                           max="100" 
+                                           step="0.1" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12 hover:border-blue-300"
+                                           placeholder="Masukkan ketinggian air"
+                                           required>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <span class="text-gray-500 text-sm">cm</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Range: 0-100 cm</p>
+                            </div>
+
+                            <!-- Curah Hujan -->
+                            <div>
+                                <label for="curah_hujan" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-cloud-rain text-blue-500 mr-1"></i>
+                                    Curah Hujan (mm)
+                                </label>
+                                <div class="relative">
+                                    <input type="number" 
+                                           id="curah_hujan" 
+                                           name="curah_hujan" 
+                                           min="0" 
+                                           max="300" 
+                                           step="0.1" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12 hover:border-blue-300"
+                                           placeholder="Masukkan curah hujan"
+                                           required>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <span class="text-gray-500 text-sm">mm</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Range: 0-300 mm</p>
+                            </div>
+
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                                <i class="fas fa-calculator mr-2"></i>
+                                <span id="buttonText">Hitung Fuzzy Mamdani</span>
+                            </button>
+                        </form>
+
+                        <!-- Quick Examples -->
+                        <div class="mt-6">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                                Contoh Cepat:
+                            </h3>
+                            <div class="space-y-2">
+                                <button onclick="setInput(16, 50)" 
+                                        class="w-full bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm transition-all duration-200 text-left hover:shadow-md">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    <strong>Aman:</strong> Air 16cm, Hujan 50mm
+                                </button>
+                                <button onclick="setInput(25, 120)" 
+                                        class="w-full bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-sm transition-all duration-200 text-left hover:shadow-md">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    <strong>Siaga:</strong> Air 25cm, Hujan 120mm
+                                </button>
+                                <button onclick="setInput(35, 150)" 
+                                        class="w-full bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm transition-all duration-200 text-left hover:shadow-md">
+                                    <i class="fas fa-exclamation-circle mr-2"></i>
+                                    <strong>Banjir:</strong> Air 35cm, Hujan 150mm
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 class="text-sm font-medium text-blue-900 mb-2">
+                                <i class="fas fa-info-circle mr-1"></i>Tips Penggunaan:
+                            </h4>
+                            <ul class="text-xs text-blue-700 space-y-1">
+                                <li>• Masukkan nilai sesuai dengan kondisi aktual</li>
+                                <li>• Gunakan contoh cepat untuk melihat perbedaan hasil</li>
+                                <li>• Perhatikan grafik membership functions untuk memahami logika fuzzy</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Current Status -->
+                    <div id="currentStatus" class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hidden fade-in-up">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-tachometer-alt text-blue-600 mr-2"></i>Status Terkini
+                        </h2>
+                        <div id="statusContent"></div>
+                    </div>
+                </div>
+
+                <!-- Membership Functions Charts -->
+                <div class="xl:col-span-1 space-y-6">
+                    <!-- Ketinggian Air Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-chart-area text-blue-600 mr-2"></i>
+                            Membership Functions - Ketinggian Air
+                        </h2>
+                        <div id="membershipChartAir" class="w-full h-80 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <div class="text-center text-gray-500">
+                                <i class="fas fa-chart-line text-4xl mb-2"></i>
+                                <p>Grafik akan muncul setelah data dimuat</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-green-500 mr-2 rounded"></div>
+                                    <span>Rendah (0-20)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-yellow-500 mr-2 rounded"></div>
+                                    <span>Sedang (15-35)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-red-500 mr-2 rounded"></div>
+                                    <span>Tinggi (30-50)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Curah Hujan Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-chart-area text-green-600 mr-2"></i>
+                            Membership Functions - Curah Hujan
+                        </h2>
+                        <div id="membershipChartHujan" class="w-full h-80 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <div class="text-center text-gray-500">
+                                <i class="fas fa-chart-line text-4xl mb-2"></i>
+                                <p>Grafik akan muncul setelah data dimuat</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-green-500 mr-2 rounded"></div>
+                                    <span>Rendah (0-100)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-yellow-500 mr-2 rounded"></div>
+                                    <span>Sedang (50-150)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-1 bg-red-500 mr-2 rounded"></div>
+                                    <span>Tinggi (100-200)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend & Info -->
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border border-blue-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                            Informasi Grafik
+                        </h3>
+                        <div class="space-y-3 text-sm text-gray-700">
+                            <div class="flex items-start">
+                                <i class="fas fa-circle text-blue-500 mt-1 mr-2"></i>
+                                <div>
+                                    <strong>Garis Vertikal Biru:</strong> Menunjukkan nilai input yang dimasukkan
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-circle text-green-500 mt-1 mr-2"></i>
+                                <div>
+                                    <strong>Area Hijau:</strong> Membership function untuk tingkat "Rendah"
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-circle text-yellow-500 mt-1 mr-2"></i>
+                                <div>
+                                    <strong>Area Kuning:</strong> Membership function untuk tingkat "Sedang"
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-circle text-red-500 mt-1 mr-2"></i>
+                                <div>
+                                    <strong>Area Merah:</strong> Membership function untuk tingkat "Tinggi"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="xl:col-span-1 space-y-6">
+                    <div id="resultsPanel" class="hidden space-y-6">
+                        <!-- Step 1: Fuzzifikasi -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">Step 1</span>
+                                Fuzzifikasi
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">Mengkonversi input crisp menjadi nilai fuzzy</p>
+                            <div id="step1Content"></div>
+                        </div>
+
+                        <!-- Step 2: Inferensi -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">Step 2</span>
+                                Inferensi
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">Menerapkan aturan fuzzy untuk mendapatkan output</p>
+                            <div id="step2Content"></div>
+                        </div>
+
+                        <!-- Step 3: Agregasi -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mr-2">Step 3</span>
+                                Agregasi
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">Menggabungkan hasil dari semua aturan yang aktif</p>
+                            <div id="step3Content"></div>
+                        </div>
+
+                        <!-- Step 4: Defuzzifikasi -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 fade-in-up">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mr-2">Step 4</span>
+                                Defuzzifikasi
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">Mengkonversi output fuzzy menjadi nilai crisp</p>
+                            <div id="step4Content"></div>
+                        </div>
+
+                        <!-- Final Summary -->
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border border-blue-100 fade-in-up">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                                Kesimpulan Akhir
+                            </h3>
+                            <div id="finalSummary"></div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder when no results -->
+                    <div id="noResultsPlaceholder" class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 text-center">
+                        <div class="text-gray-400 mb-4">
+                            <i class="fas fa-chart-pie text-6xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Hasil Perhitungan</h3>
+                        <p class="text-gray-600 mb-6">Masukkan nilai parameter dan klik "Hitung Fuzzy Mamdani" untuk melihat hasil perhitungan step-by-step</p>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="bg-blue-50 p-3 rounded-lg">
+                                <i class="fas fa-step-forward text-blue-600 mb-1"></i>
+                                <div class="font-medium text-blue-900">4 Langkah</div>
+                                <div class="text-blue-600">Proses Fuzzy</div>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded-lg">
+                                <i class="fas fa-rules text-green-600 mb-1"></i>
+                                <div class="font-medium text-green-900">9 Aturan</div>
+                                <div class="text-green-600">Basis Pengetahuan</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-8 text-center shadow-2xl">
+            <div class="relative mb-6">
+                <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-blue-100 pulse-ring"></div>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Menghitung Fuzzy Logic</h3>
+            <p class="text-gray-600">Memproses algoritma Mamdani...</p>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>Perhitungan berhasil!</span>
+        </div>
+    </div>
+
+    <!-- Error Notification -->
+    <div id="errorNotification" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="errorMessage">Terjadi kesalahan!</span>
+        </div>
+    </div>
+
+    <!-- Chart Data (This should be populated by your backend) -->
+    <script>
+        // Sample chart data - replace this with actual data from your backend
+        window.chartData = {
+            air: {
+                x: Array.from({length: 101}, (_, i) => i),
+                rendah: Array.from({length: 101}, (_, i) => {
+                    if (i <= 20) return 1;
+                    else if (i <= 30) return (30 - i) / 10;
+                    else return 0;
+                }),
+                sedang: Array.from({length: 101}, (_, i) => {
+                    if (i <= 15) return 0;
+                    else if (i <= 25) return (i - 15) / 10;
+                    else if (i <= 35) return (35 - i) / 10;
+                    else return 0;
+                }),
+                tinggi: Array.from({length: 101}, (_, i) => {
+                    if (i <= 30) return 0;
+                    else if (i <= 40) return (i - 30) / 10;
+                    else return 1;
+                })
+            },
+            hujan: {
+                x: Array.from({length: 301}, (_, i) => i),
+                rendah: Array.from({length: 301}, (_, i) => {
+                    if (i <= 100) return 1;
+                    else if (i <= 150) return (150 - i) / 50;
+                    else return 0;
+                }),
+                sedang: Array.from({length: 301}, (_, i) => {
+                    if (i <= 50) return 0;
+                    else if (i <= 100) return (i - 50) / 50;
+                    else if (i <= 150) return (150 - i) / 50;
+                    else return 0;
+                }),
+                tinggi: Array.from({length: 301}, (_, i) => {
+                    if (i <= 100) return 0;
+                    else if (i <= 150) return (i - 100) / 50;
+                    else return 1;
+                })
+            }
+        };
+    </script>
+
+    <!-- Include the fuzzy_manual.js file -->
+    <script src="/static/js/fuzzy_manual.js"></script>
+
+    <script>
+        // Additional functionality for notifications
+        function showNotification(type, message) {
+            const notification = document.getElementById(type + 'Notification');
+            if (type === 'error') {
+                document.getElementById('errorMessage').textContent = message;
+            }
+            
+            notification.classList.remove('translate-x-full');
+            notification.classList.add('translate-x-0');
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-0');
+                notification.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Enhanced form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    // Remove previous validation classes
+                    this.classList.remove('border-red-500', 'border-green-500');
+                    
+                    if (this.value && !isNaN(value)) {
+                        if (value >= min && value <= max) {
+                            this.classList.add('border-green-500');
+                        } else {
+                            this.classList.add('border-red-500');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Smooth scroll enhancement
+        function smoothScrollTo(elementId) {
+            document.getElementById(elementId).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    </script>
+</body>
+</html>
